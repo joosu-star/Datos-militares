@@ -97,6 +97,73 @@
       margin-top: 2em;
       background: #000;
     }
+    /* Caja de contraseña */
+    #password-box-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.92);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #password-box {
+      background: #111;
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      box-shadow: 0 0 18px #00ff0060;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding: 2em 2em 1.5em 2em;
+      min-width: 280px;
+      max-width: 90vw;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #password-box label {
+      font-size: 1.3em;
+      margin-bottom: 1em;
+      letter-spacing: 2px;
+    }
+    #password-input {
+      background: #000;
+      color: #00ff00;
+      border: 1.5px solid #00ff00;
+      border-radius: 5px;
+      font-size: 1.2em;
+      padding: 0.6em 1em;
+      outline: none;
+      margin-bottom: 1em;
+      text-align: center;
+      width: 200px;
+      max-width: 100%;
+      letter-spacing: 3px;
+    }
+    #password-submit {
+      background: #111;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1em;
+      padding: 0.5em 1.2em;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 0.5em;
+    }
+    #password-submit:hover {
+      background: #222;
+    }
+    #password-error {
+      color: #ff2222;
+      font-size: 1em;
+      margin-top: 0.5em;
+      min-height: 1.2em;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
     @media (max-width: 600px) {
       body {
         font-size: 5vw;
@@ -107,10 +174,22 @@
       #iframe-container iframe {
         height: 40vh;
       }
+      #password-box {
+        min-width: 90vw;
+        padding: 1.2em 0.8em 1em 0.8em;
+      }
+      #password-input {
+        font-size: 1.1em;
+        width: 90vw;
+        max-width: 98vw;
+      }
     }
     @media (max-width: 400px) {
       .terminal {
         font-size: 0.95em;
+      }
+      #password-box label {
+        font-size: 1.1em;
       }
     }
     @keyframes blink {
@@ -136,8 +215,17 @@
     <div style="text-align:center;">
       <pre id="loading-text">
 [   INICIANDO SISTEMA...   ]
-█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒��[...]
       </pre>
+    </div>
+  </div>
+  <!-- Caja de contraseña -->
+  <div id="password-box-overlay">
+    <div id="password-box">
+      <label for="password-input">Ingrese la contraseña de acceso:</label>
+      <input type="password" id="password-input" autocomplete="off" maxlength="16" inputmode="numeric" pattern="[0-9]*" />
+      <button id="password-submit">Acceder</button>
+      <div id="password-error"></div>
     </div>
   </div>
   <script>
@@ -166,7 +254,7 @@
     function startLoadingRetro(callback) {
       progress = 0;
       // Barra inicial correcta y cerrada
-      loadingText.innerHTML = `[   INICIANDO SISTEMA...   ]\n█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒`;
+      loadingText.innerHTML = `[   INICIANDO SISTEMA...   ]\n█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒�[...]
       // Duración total aleatoria entre 2 y 4 segundos
       const totalDuration = Math.random() * 2000 + 2000; // Entre 2000 y 4000 ms
       const barLength = 44;
@@ -183,10 +271,51 @@
           clearInterval(loadingInterval);
           setTimeout(() => {
             document.getElementById("loader").style.display = "none";
-            callback();
+            showPasswordBox(callback);
           }, 500);
         }
       }, 60);
+    }
+
+    // --- Pantalla de contraseña ---
+    function showPasswordBox(successCallback) {
+      const overlay = document.getElementById("password-box-overlay");
+      const input = document.getElementById("password-input");
+      const error = document.getElementById("password-error");
+      overlay.style.display = "flex";
+      input.value = "";
+      error.textContent = "";
+      setTimeout(() => { input.focus(); }, 100);
+
+      // Evento botón
+      document.getElementById("password-submit").onclick = function() {
+        validatePassword(successCallback);
+      };
+
+      // Enter en el input
+      input.onkeydown = function(e) {
+        if (e.key === "Enter") {
+          validatePassword(successCallback);
+        }
+      };
+    }
+
+    function hidePasswordBox() {
+      document.getElementById("password-box-overlay").style.display = "none";
+    }
+
+    function validatePassword(successCallback) {
+      const input = document.getElementById("password-input");
+      const error = document.getElementById("password-error");
+      const password = input.value.trim();
+      if (password === "30191531") {
+        hidePasswordBox();
+        successCallback();
+      } else {
+        error.textContent = "Contraseña incorrecta";
+        input.value = "";
+        setTimeout(() => { input.focus(); }, 100);
+      }
     }
 
     // --- Tu código original aquí abajo ---
