@@ -1,62 +1,297 @@
-<!DOCTYPE html> 
-<html lang="es"> 
-<head> 
-  <meta charset="UTF-8"> 
-  <title>Servidor Militar Simulado</title> 
-  <style> 
-    body { 
-      background-color: black; 
-      color: #00ff00; 
-      font-family: "Courier New", monospace; 
-      padding: 20px; 
-    } 
-    .terminal { 
-      border: 1px solid #00ff00; 
-      padding: 15px; 
-      width: 800px; 
-      margin: auto; 
-      box-shadow: 0 0 15px #00ff00; 
-    } 
-    .blink { 
-      animation: blink 1s infinite; 
-    } 
-    a { 
-      color: #00ff00; 
-      text-decoration: none; 
-    } 
-    a:hover { 
-      text-decoration: underline; 
-    } 
-  </style> 
-</head> 
-<body> 
-  <div class="terminal" id="terminal"> 
-    <p id="output"></p> 
-    <span class="blink">█</span> 
-  </div> 
-  <script> 
-    const text = `ACCESO AUTORIZADO...\nCargando archivos clasificados...\nSeleccione un documento:\n\n  [1] Operación Lamentó Gris\n  [2] Entrenamiento Básico\n  [3] CQB Avanzado\n  [4] Operación Bosnia\n\nEscriba el número de opción y presione ENTER:\n`; 
-    let i = 0; 
-    function typeWriter() { 
-      if (i < text.length) { 
-        document.getElementById("output").innerHTML += text.charAt(i); 
-        i++; 
-        setTimeout(typeWriter, 40); // velocidad 
-      } 
-    } 
-    window.onload = typeWriter; 
-    // Capturar teclado 
-    document.addEventListener("keydown", function(event) { 
-      if (event.key === "1") { 
-        window.location.href = "https:                                                                                              
-      } else if (event.key === "2") { 
-        window.location.href = "https://docs.google.com/document/d/1-fL3KTjELkZ8MVV1b7tek1fKujRVXGMBmHqIY1vPDek/edit?usp=drivesdk"; 
-      } else if (event.key === "3") { 
-        window.location.href = "https:                                                                                              
-      } else if (event.key === "4") { 
-        window.location.href = "https://docs.google.com/document/d/10T2Y3j3t8ucIaeMDo5SBBRfubIyxEGjZo6mCfk1uPlM/edit?usp=drivesdk"; 
-      } 
-    }); 
-  </script> 
-</body> 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Base Militar Contertallis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 3.8vw;
+    }
+    #intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: black;
+      z-index: 1001;
+    }
+    #intro-text {
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 3em;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: black;
+      z-index: 999;
+    }
+    #loading-text {
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 1.2em;
+    }
+    .terminal {
+      border: 2px solid #00ff00;
+      border-radius: 8px;
+      box-shadow: 0 0 24px #00ff0050;
+      background: black;
+      color: #00ff00;
+      min-height: 60vh;
+      max-width: 800px;
+      margin: 5vh auto 0;
+      padding: 2vw 2vw 3vw 2vw;
+      box-sizing: border-box;
+      font-family: 'Courier New', monospace;
+      font-size: 1.2em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #output, #cursor {
+      font-size: 1em;
+      word-break: break-word;
+    }
+    .mobile-buttons {
+      margin-top: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    .mobile-buttons button, .back {
+      background: #111;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 1.2em;
+      padding: 0.7em 1.5em;
+      border-radius: 4px;
+      margin-bottom: 0.5em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .mobile-buttons button:hover, .back:hover {
+      background: #222;
+    }
+    #iframe-container iframe {
+      width: 100%;
+      height: 60vh;
+      border: none;
+      margin-top: 2em;
+      background: #000;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 5vw;
+      }
+      .terminal {
+        font-size: 1.1em;
+      }
+      #iframe-container iframe {
+        height: 40vh;
+      }
+    }
+    @media (max-width: 400px) {
+      .terminal {
+        font-size: 0.95em;
+      }
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    .blink {
+      animation: blink 1s steps(1, start) infinite;
+    }
+  </style>
+</head>
+<body>
+  <div id="intro">
+    <span id="intro-text">jake.corps</span>
+  </div>
+  <div class="terminal" id="terminal">
+    <p id="output"></p>
+    <span class="blink" id="cursor">█</span>
+    <div id="mobile-buttons" class="mobile-buttons" style="display:none"></div>
+    <div id="iframe-container"></div>
+  </div>
+  <div id="loader">
+    <div style="text-align:center;">
+      <pre id="loading-text">
+[   INICIANDO SISTEMA...   ]
+█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒[...]
+      </pre>
+    </div>
+  </div>
+  <script>
+    function isMobile() {
+      return (/android|iphone|ipad|ipod|opera mini|iemobile|blackberry|webos/i).test(navigator.userAgent);
+    }
+
+    // Mostrar intro "jake.corps" y luego la pantalla de carga retro
+    function showIntroThenLoader(callback) {
+      const intro = document.getElementById("intro");
+      const loader = document.getElementById("loader");
+      intro.style.display = "flex";
+      loader.style.display = "none";
+      setTimeout(() => {
+        intro.style.display = "none";
+        loader.style.display = "flex";
+        startLoadingRetro(callback);
+      }, 2500); // 2.5 segundos (ajusta aquí el tiempo del intro)
+    }
+
+    // Pantalla de carga retro con duración aleatoria
+    const loadingText = document.getElementById("loading-text");
+    let progress = 0;
+    let loadingInterval;
+
+    function startLoadingRetro(callback) {
+      progress = 0;
+      loadingText.innerHTML = `[   INICIANDO SISTEMA...   ]\n█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒[...]
+      // Duración total aleatoria entre 2 y 4 segundos
+      const totalDuration = Math.random() * 2000 + 2000; // Entre 2000 y 4000 ms
+      const barLength = 44;
+      const startTime = Date.now();
+
+      loadingInterval = setInterval(() => {
+        // Calcula progreso según tiempo transcurrido
+        const elapsed = Date.now() - startTime;
+        progress = Math.min(100, Math.floor((elapsed / totalDuration) * 100));
+        const filled = Math.floor(progress * barLength / 100);
+        const bar = "█".repeat(filled) + "▒".repeat(barLength - filled);
+        loadingText.innerHTML = `[   INICIANDO SISTEMA...   ]\n${bar}\n${progress}%`;
+        if (progress >= 100) {
+          clearInterval(loadingInterval);
+          setTimeout(() => {
+            document.getElementById("loader").style.display = "none";
+            callback();
+          }, 500);
+        }
+      }, 60);
+    }
+
+    // --- Tu código original aquí abajo ---
+    const menuText = `ACCESO AUTORIZADO...
+Cargando archivos clasificados...
+Seleccione un documento:
+
+  [1] Operación Lamento Gris
+  [2] Entrenamiento Básico
+  [3] CQB Avanzado
+  [4] Operación Bosnia
+  [5] Documento PDF
+
+Presione el número correspondiente para acceder al documento.`;
+
+    const docs = {
+      "1": "https://drive.google.com/file/d/1Cb32m7Xj6wDAb-7ieSftT8gYFy3MCCZ9/preview",
+      "2": "https://docs.google.com/document/d/1-fL3KTjELkZ8MVV1b7tek1fKujRVXGMBmHqIY1vPDek/preview",
+      "3": "https://docs.google.com/document/d/11hfdHwqIu8Z4aEE3Fn9xvRvM4Clwo0JZd8V11Hm-dD0/preview",
+      "4": "https://drive.google.com/file/d/1Cb32m7Xj6wDAb-7ieSftT8gYFy3MCCZ9/preview",
+      "5": "https://drive.google.com/file/d/1Cb32m7Xj6wDAb-7ieSftT8gYFy3MCCZ9/preview"
+    };
+
+    const docTitles = {
+      "1": "Operación Lamento Gris",
+      "2": "Entrenamiento Básico",
+      "3": "CQB Avanzado",
+      "4": "Operación Bosnia",
+      "5": "Documento PDF"
+    };
+
+    let i = 0, writing = false, finishedTyping = false;
+
+    function typeWriter() {
+      writing = true;
+      finishedTyping = false;
+      const output = document.getElementById("output");
+      if (i < menuText.length) {
+        let char = menuText.charAt(i);
+        if (char === '\n') {
+          output.innerHTML += '<br>';
+        } else {
+          output.innerHTML += char;
+        }
+        i++;
+        setTimeout(typeWriter, 32);
+      } else {
+        writing = false;
+        finishedTyping = true;
+        document.getElementById("cursor").style.display = "inline";
+        if (isMobile()) showMobileButtons();
+      }
+    }
+
+    function showMobileButtons() {
+      const container = document.getElementById("mobile-buttons");
+      container.innerHTML = "";
+      Object.keys(docs).forEach(num => {
+        const btn = document.createElement("button");
+        btn.textContent = docTitles[num];
+        btn.onclick = () => showDoc(num);
+        container.appendChild(btn);
+      });
+      container.style.display = "flex";
+    }
+
+    function hideMobileButtons() {
+      document.getElementById("mobile-buttons").style.display = "none";
+    }
+
+    function showMenu() {
+      i = 0;
+      writing = false;
+      finishedTyping = false;
+      document.getElementById("output").innerHTML = "";
+      document.getElementById("iframe-container").innerHTML = "";
+      document.getElementById("cursor").style.display = "none";
+      hideMobileButtons();
+      setTimeout(() => {
+        typeWriter();
+      }, 120);
+    }
+
+    function showDoc(num) {
+      if (!finishedTyping) return;
+      hideMobileButtons();
+      document.getElementById("output").innerHTML = `<b>Documento seleccionado:</b> ${docTitles[num]}`;
+      document.getElementById("cursor").style.display = "none";
+      if (docs[num]) {
+        document.getElementById("iframe-container").innerHTML =
+          `<iframe src="${docs[num]}" allowfullscreen></iframe>
+          <button class="back" onclick="showMenu()">← Volver al menú</button>`;
+      } else {
+        document.getElementById("iframe-container").innerHTML =
+          `<p>Documento no encontrado.</p>
+          <button class="back" onclick="showMenu()">← Volver al menú</button>`;
+      }
+    }
+
+    window.onload = function() {
+      showIntroThenLoader(showMenu);
+    };
+    document.addEventListener("keydown", function(event) {
+      if (!isMobile() && finishedTyping && docs[event.key]) showDoc(event.key);
+      if (!isMobile() && finishedTyping && event.key === "Escape") showMenu();
+    });
+  </script>
+</body>
 </html>
